@@ -1,0 +1,21 @@
+<p>todo-list works!</p>
+<!-- Kullanıcının todo girebileceği bir form, altında todoların listelenmesi, her todonun 1. 2. diye sıralanması -->
+<!-- Sonunda (X) ikonu ile listeden kaldırılabilmesi -->
+<!-- Ekleme esnasında aynı todo mevcutsa (frontend kontrolü) eklemeyip inputu temizlesin.  -->
+<!-- Her ekleme sonrası input temizlensin. -->
+<!-- Bireysel -->
+
+<p>todo-list works!</p>
+<div>
+    <input [(ngModel)]="newTodo" placeholder="Enter a to-do." />
+    <button (click)="addNewTodo()">Ekle</button>
+
+    <ul>
+        <li *ngFor="let todo of todoList; let i = index">
+            {{ i + 1 }}. {{ todo }}
+            <button (click)="removeTodo(i)">X</button>
+        </li>
+    </ul>
+
+    <p *ngIf="todoList.length === 0">List is empty.</p>
+</div>
