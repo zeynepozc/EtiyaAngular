@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http'; 
 import { TodoCardComponent } from './../todo-card/todo-card.component';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +15,7 @@ export class TodoListComponent implements OnInit {
   todoList: string[] = [];
   newTodo: string = '';
   toDoListFromBackend: GetToDoListResponse[] = [];
-  // Dependency Injection
+
   constructor(private httpClient: HttpClient) {}
 
   ngOnInit() {
@@ -23,14 +23,41 @@ export class TodoListComponent implements OnInit {
   }
 
   add(): void {
-    const existingItem = this.todoList.find((i) => i == this.newTodo);
-    if (!existingItem && this.newTodo.trim().length > 0)
-      this.todoList.push(this.newTodo);
-    this.newTodo = '';
+    const newTodoItem: GetToDoListResponse = {
+      userId: 1,
+      id: this.toDoListFromBackend.length + 1,
+      title: this.newTodo,
+      completed: false
+    };
+
+    if (this.newTodo.trim().length > 0) {
+      this.httpClient
+        .post<GetToDoListResponse>('https://jsonplaceholder.typicode.com/todos', newTodoItem)
+        .subscribe({
+          next: (response: GetToDoListResponse) => {
+            this.toDoListFromBackend.push(response);
+            this.newTodo = '';
+          },
+          error: (err: any) => {
+            console.log('Ekleme sırasında hata oluştu', err);
+          }
+        });
+    }
   }
 
-  remove(todo: string) {
-    this.todoList = this.todoList.filter((i) => i !== todo);
+  remove(todo: GetToDoListResponse) {
+    this.httpClient
+      .delete(`https://jsonplaceholder.typicode.com/todos/${todo.id}`)
+      .subscribe({
+        next: () => {
+          this.toDoListFromBackend = this.toDoListFromBackend.filter(
+            (i) => i.id !== todo.id
+          );
+        },
+        error: (err: any) => {
+          console.log('Silme sırasında hata oluştu', err);
+        }
+      });
   }
 
   fetchTodos() {
